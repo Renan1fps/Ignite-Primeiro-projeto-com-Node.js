@@ -8,6 +8,9 @@ const customers = []
 
 app.post('/account', (request, response)=>{
   const { cpf, name } = request.body
+  if( cpf=== null ){
+    response.status(400).send()
+  }
   const id = uuidv4()
 
   customers.push({cpf, name, id})
