@@ -1,3 +1,4 @@
+const { request } = require('express')
 const express = require('express')
 const { v4:uuidv4 } = require('uuid')
 
@@ -5,6 +6,24 @@ const app = express()
 app.use(express.json())
 
 const customers = []
+
+function verifyExistsCustomer(request, response, next){
+  const { cpf } = request.params
+
+  const customer = customers.find(customer => customer.cpf === cpf)
+
+  if(!customer){
+    return response.status(400).json({message: "Cpf not found"})
+  }
+
+  request.customer = customer
+
+  return next()
+
+}
+
+//middleware: faz interceptação da rota e executa uma lógica
+//obs: tem que ser antes do (req, res), app.use(middleware)  <-- caso queira usar em todas rotas
 
 app.post('/account', (request, response)=>{
   const { cpf, name } = request.body
@@ -25,14 +44,9 @@ app.post('/account', (request, response)=>{
   response.status(201).send()
 })
 
-app.get('/statement/:cpf', (request, response)=>{
-  const { cpf } = request.params
+app.get('/statement/:cpf', verifyExistsCustomer, (request, response)=>{
+  const { customer } = request
 
-  const customer = customers.find(customer => customer.cpf === cpf)
-
-  if(!customer){
-    return response.status(400).json({message: "Cpf not found"})
-  }
   return response.json(customer.statement)
 })
 
