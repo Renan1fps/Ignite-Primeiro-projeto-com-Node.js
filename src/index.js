@@ -1,4 +1,3 @@
-const { request } = require('express')
 const express = require('express')
 const { v4:uuidv4 } = require('uuid')
 
@@ -48,6 +47,23 @@ app.get('/statement/:cpf', verifyExistsCustomer, (request, response)=>{
   const { customer } = request
 
   return response.json(customer.statement)
+})
+
+app.post('/deposit/:cpf', verifyExistsCustomer, (request, response)=>{
+  const { description, amount, type } = request.body
+  const { customer } = request
+
+  const statementOperation = {
+    description,
+    amount,
+    type: type === 1 ? "deposit" : "withdraw",
+    createdAt: new Date()
+  }
+
+  customer.statement.push(statementOperation)
+
+  return response.status(201).send()
+
 })
 
 
