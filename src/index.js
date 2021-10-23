@@ -66,5 +66,19 @@ app.post('/deposit/:cpf', verifyExistsCustomer, (request, response)=>{
 
 })
 
+app.put('/account/:cpf', verifyExistsCustomer, (request, response)=> {
+  const { name } = request.body
+  const { customer } = request
+
+  customer.name = name
+  response.status(200).send()
+})
+
+app.get('/account/:cpf', verifyExistsCustomer, (request, response)=> {
+  const { customer } = request
+
+  response.json(customer)
+})
+
 
 app.listen(8000)
