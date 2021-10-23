@@ -80,5 +80,13 @@ app.get('/account/:cpf', verifyExistsCustomer, (request, response)=> {
   response.json(customer)
 })
 
+app.delete('/account/:cpf', verifyExistsCustomer, (request, response) => {
+  const { customer } = request
+
+  customers.splice(customer, 1)
+
+  response.status(204).send()
+
+})
 
 app.listen(8000)
